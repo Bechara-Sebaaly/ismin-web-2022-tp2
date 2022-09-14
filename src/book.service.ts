@@ -17,6 +17,8 @@ export class BookService {
     let b = this.bookshelf.books.filter((element) => element.author === author);
     this.sortBookshelf(b);
     return b;
+
+    //return this.sortBookshelf(this.bookshelf.books.filter((element) => element.author === author));
   }
 
   findByTitle(title: string): IBook {
@@ -33,7 +35,7 @@ export class BookService {
       return ibookDto;
     }
 
-    throw new Error('Book Already Exists!')
+    throw new Error('Book Already Exists!');
   }
 
   remove(title: string) {
