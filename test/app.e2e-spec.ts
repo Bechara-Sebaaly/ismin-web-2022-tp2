@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import supertest from 'supertest';
 import { BookModule } from '../src/book.module';
 
@@ -14,6 +14,7 @@ describe('Books API', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
 
     httpRequester = request(app.getHttpServer());
@@ -83,7 +84,7 @@ describe('Books API', () => {
       .get('/books')
       .query({ author: 'Voltaire' })
       .expect(200);
-      
+
     expect(response.body).toEqual([
       {
         title: 'Candide',
@@ -113,5 +114,102 @@ describe('Books API', () => {
     const response = await httpRequester.get('/books');
 
     expect(response.body).toEqual([]);
+  });
+
+  it(`/GET search books by author`, async () => {
+    // First prepare the data by adding some books
+    await httpRequester.post('/books').send({
+      title: 'Candide',
+      author: 'Voltaire',
+      date: '1759',
+    });
+    await httpRequester.post('/books').send({
+      title: 'Zadig',
+      author: 'Voltadd',
+      date: '1748',
+    });
+    await httpRequester.post('/books').send({
+      title: 'La Cantatrice chauve',
+      author: 'Ionesco',
+      date: '1950',
+    });
+
+    // Then get the previously stored book
+    const response = await httpRequester
+      .get('/books/author/search/')
+      .query({ author: 'Volta' })
+      .expect(200);
+
+    expect(response.body).toEqual([
+      {
+        title: 'Candide',
+        author: 'Voltaire',
+        date: '1759',
+      },
+      {
+        title: 'Zadig',
+        author: 'Voltadd',
+        date: '1748',
+      },
+    ]);
+  });
+
+  it(`/GET search books by title`, async () => {
+    // First prepare the data by adding some books
+    await httpRequester.post('/books').send({
+      title: 'Candide',
+      author: 'Voltaire',
+      date: '1759',
+    });
+    await httpRequester.post('/books').send({
+      title: 'Zadig',
+      author: 'Voltaire',
+      date: '1748',
+    });
+    await httpRequester.post('/books').send({
+      title: 'Candittad',
+      author: 'Ionesco',
+      date: '1950',
+    });
+
+    // Then get the previously stored book
+    const response = await httpRequester
+      .get('/books/title/search/Candi')
+      .expect(200);
+
+    expect(response.body).toEqual([
+      {
+        title: 'Candide',
+        author: 'Voltaire',
+        date: '1759',
+      },
+      {
+        title: 'Candittad',
+        author: 'Ionesco',
+        date: '1950',
+      },
+    ]);
+  });
+
+  it(`/Post validation`, async () => {
+    const response = await httpRequester
+      .post('/books')
+      .send({
+        title: '',
+        author: '',
+        date: '',
+      })
+      .expect(400);
+
+    expect(response.body).toEqual({
+      statusCode: 400,
+      message: [
+        'title should not be empty',
+        'author should not be empty',
+        'date should not be empty',
+        'date must be a valid ISO 8601 date string',
+      ],
+      error: 'Bad Request',
+    });
   });
 });

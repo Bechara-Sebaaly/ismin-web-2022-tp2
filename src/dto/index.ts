@@ -1,2 +1,2 @@
-export {IBook} from './ibook.interface';
-export {Bookshelf} from './bookshelf.dto';
+export { BookDto } from './book.dto';
+export { Bookshelf } from './bookshelf.dto';

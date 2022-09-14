@@ -1,5 +1,5 @@
-import {IBook} from './ibook.interface'
+import { BookDto } from './book.dto';
 
-export class Bookshelf{
-    books: IBook[] = [];
+export class Bookshelf {
+  books: BookDto[] = [];
 }
