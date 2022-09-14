@@ -83,7 +83,7 @@ describe('Books API', () => {
       .get('/books')
       .query({ author: 'Voltaire' })
       .expect(200);
-
+      
     expect(response.body).toEqual([
       {
         title: 'Candide',
