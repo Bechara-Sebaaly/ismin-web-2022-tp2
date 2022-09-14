@@ -136,8 +136,8 @@ describe('Books API', () => {
 
     // Then get the previously stored book
     const response = await httpRequester
-      .get('/books/author/search/')
-      .query({ author: 'Volta' })
+      .post('/books/author/search/')
+      .send({ term: 'Volta' })
       .expect(200);
 
     expect(response.body).toEqual([
@@ -174,7 +174,8 @@ describe('Books API', () => {
 
     // Then get the previously stored book
     const response = await httpRequester
-      .get('/books/title/search/Candi')
+      .post('/books/title/search')
+      .send({ term: 'candi' })
       .expect(200);
 
     expect(response.body).toEqual([

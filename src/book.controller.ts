@@ -30,13 +30,13 @@ export class BookController {
     return this.bookService.findByTitle(title);
   }
 
-  @Get('/title/search/:title')
-  searchByTitle(@Param('title') title: string) {
+  @Post('/title/search')
+  searchByTitle(@Body('term') title: string) {
     return this.bookService.searchByTitle(title);
   }
 
-  @Get('/author/search')
-  searchByAuthor(@Query('author') author: string) {
+  @Post('/author/search')
+  searchByAuthor(@Body('term') author: string) {
     return this.bookService.searchByAuthor(author);
   }
 
